@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
+import asyncHandler from 'express-async-handler'; 
 import User from '../models/User.js';
-import generateToken from '../utils/generateToken.js'; // We created this earlier
+import generateToken from '../utils/generateToken.js';
 import sendEmail from '../utils/sendEmail.js';
 
 // to generate 6 digit OTP
@@ -147,4 +148,12 @@ const authUser = asyncHandler( async (req, res) => {
   }
 });
 
-export { registerUser, verifyEmail, authUser };
+const logoutUser = (req, res) => {
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: 'Logged out successfully' });
+};
+
+export { registerUser, verifyEmail, authUser ,logoutUser};
