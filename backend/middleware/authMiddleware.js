@@ -30,7 +30,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
 //Admin Middleware: Checks if the logged-in user is an Admin
 const admin = (req, res, next) => {
-  if (req.user && req.user.isAdmin) {
+  if (req.user && req.user.role === 'admin') {
     next(); // User is Admin, proceed
   } else {
     res.status(401);

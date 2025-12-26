@@ -118,7 +118,7 @@ const verifyEmail = asyncHandler( async (req, res) => {
     _id: user._id,
     name: user.name,
     email: user.email,
-    isAdmin: user.isAdmin,
+    role: user.role,
   });
 });
 
@@ -140,7 +140,7 @@ const authUser = asyncHandler( async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     });
   } else {
     res.status(401);
