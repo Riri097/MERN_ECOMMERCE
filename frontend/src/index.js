@@ -10,13 +10,21 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyScreen from './screens/VerifyScreen';
 
+import AdminRoute from './components/AdminRoute';
+import ProductListScreen from './screens/admin/ProductListScreen';
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="/login" element= {<LoginScreen/>}/>
       <Route path="/register" element={<RegisterScreen />} /> 
-      <Route path="/verify" element={<VerifyScreen />} />  
+      <Route path="/verify" element={<VerifyScreen />} /> 
+
+      <Route path="" element={<AdminRoute />}>
+        <Route path="/admin/productlist" element={<ProductListScreen />} />
+        {/* We will add ProductEditScreen here next */}
+      </Route> 
     </Route>
   )
 );
