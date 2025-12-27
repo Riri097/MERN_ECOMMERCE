@@ -2,13 +2,11 @@ import { Link } from 'react-router-dom';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { 
   useGetProductsQuery, 
-  useCreateProductMutation,
   useDeleteProductMutation 
 } from '../../slices/productsApiSlice';
 
 const ProductListScreen = () => {
   const { data: products, isLoading, error, refetch } = useGetProductsQuery();
-  const [createProduct, { isLoading: loadingCreate }] = useCreateProductMutation();
   const [deleteProduct, { isLoading: loadingDelete }] = useDeleteProductMutation();
 
   const deleteHandler = async (id) => {
@@ -22,31 +20,16 @@ const ProductListScreen = () => {
     }
   };
 
-  const createProductHandler = async () => {
-    if (window.confirm('Create a new product?')) {
-      try {
-        await createProduct().unwrap();
-        refetch();
-        alert('Product Created! You can now edit it.');
-      } catch (err) {
-        alert(err?.data?.message || err.error);
-      }
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Products</h1>
-        <button
-          onClick={createProductHandler}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition"
-        >
+        <Link
+          to="/admin/product/create"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition">
           <FaPlus className="mr-2" /> Create Product
-        </button>
+        </Link>
       </div>
-
-      {loadingCreate && <p className="text-blue-500">Creating product...</p>}
       {loadingDelete && <p className="text-red-500">Deleting product...</p>}
 
       {isLoading ? (

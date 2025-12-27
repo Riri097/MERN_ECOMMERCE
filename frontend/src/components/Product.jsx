@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import Rating from './Rating';
 
 const Product = ({ product }) => {
   return (
@@ -18,10 +17,6 @@ const Product = ({ product }) => {
             {product.name}
           </h2>
         </Link>
-
-        <div className="mt-2">
-          <Rating value={product.rating} text={`${product.numReviews} reviews`} />
-        </div>
 
         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-2">
           ${product.price}

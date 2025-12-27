@@ -9,9 +9,13 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyScreen from './screens/VerifyScreen';
+import ProductScreen from './screens/ProductScreen'; 
+import CartScreen from './screens/CartScreen'; 
 
 import AdminRoute from './components/AdminRoute';
 import ProductListScreen from './screens/admin/ProductListScreen';
+import ProductEditScreen from './screens/admin/ProductEditScreen'; 
+import ProductCreateScreen from './screens/admin/ProductCreateScreen'; 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,10 +24,13 @@ const router = createBrowserRouter(
       <Route path="/login" element= {<LoginScreen/>}/>
       <Route path="/register" element={<RegisterScreen />} /> 
       <Route path="/verify" element={<VerifyScreen />} /> 
+      <Route path="/product/:id" element={<ProductScreen />} /> 
+      <Route path="/cart" element={<CartScreen />} />
 
       <Route path="" element={<AdminRoute />}>
         <Route path="/admin/productlist" element={<ProductListScreen />} />
-        {/* We will add ProductEditScreen here next */}
+        <Route path="/admin/product/:id/edit" element={<ProductEditScreen />} />
+        <Route path="/admin/product/create" element={<ProductCreateScreen />} />
       </Route> 
     </Route>
   )
