@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useVerifyMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/authSlice';
+import { useVerifyMutation } from '../../slices/usersApiSlice';
+import { setCredentials } from '../../slices/authSlice';
 
 const VerifyScreen = () => {
   const [otp, setOtp] = useState('');
   const [searchParams] = useSearchParams();
-  const email = searchParams.get('email'); // Get email from URL
+  const email = searchParams.get('email'); 
 
   const navigate = useNavigate();
   const dispatch = useDispatch();

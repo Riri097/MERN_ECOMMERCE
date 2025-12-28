@@ -5,8 +5,7 @@ import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 import sendEmail from '../utils/sendEmail.js';
 
-// to generate 6 digit OTP
-//sends otp for email, hashedotp for database
+// Generate 6 digit OTP
 const generateOTP = () => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedOTP = crypto.createHash('sha256').update(otp).digest('hex');
@@ -24,13 +23,13 @@ const registerUser = asyncHandler( async (req, res) => {
 
   const existingUser = await User.findOne({ email });
 
-// User already exists and is verified
+  // User already exists and is verified
   if (existingUser && existingUser.isVerified) {
     res.status(400);
     throw new Error('User already exists');
   }
 
-// User exists but NOT verified (Resend OTP)
+  // User exists but NOT verified (Resend OTP)
   if (existingUser && !existingUser.isVerified) {
     const { otp, hashedOTP } = generateOTP();
     
@@ -47,9 +46,7 @@ const registerUser = asyncHandler( async (req, res) => {
     return res.json({ message: 'OTP resent to email', success: true });
   }
 
-  // for new user
-  // creates random value called salt and 10 is strength level
-  // if two users have same pass salt makes them different 
+  // New User Logic
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   const { otp, hashedOTP } = generateOTP();
@@ -61,6 +58,8 @@ const registerUser = asyncHandler( async (req, res) => {
     emailOTP: hashedOTP,
     emailOTPExpire: Date.now() + 10 * 60 * 1000,
     isVerified: false,
+    role: 'user', // Default role
+    isAdmin: false // Default admin status
   });
 
   if (user) {
@@ -95,7 +94,7 @@ const verifyEmail = asyncHandler( async (req, res) => {
   const user = await User.findOne({
     email,
     emailOTP: hashedOTP,
-    emailOTPExpire: { $gt: Date.now() }, // Check if not expired
+    emailOTPExpire: { $gt: Date.now() },
   });
 
   if (!user) {
@@ -109,7 +108,6 @@ const verifyEmail = asyncHandler( async (req, res) => {
   user.emailOTPExpire = undefined;
   await user.save();
 
-  // Log them in immediately
   generateToken(res, user._id);
 
   res.json({
@@ -119,10 +117,13 @@ const verifyEmail = asyncHandler( async (req, res) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    isAdmin: user.isAdmin,
   });
 });
 
-// Login User
+// Auth user & get token
+// @route   POST /api/users/auth
+// @access  Public
 const authUser = asyncHandler( async (req, res) => {
   const { email, password } = req.body;
 
@@ -141,6 +142,7 @@ const authUser = asyncHandler( async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      isAdmin: user.role === 'admin', // Helper for frontend
     });
   } else {
     res.status(401);
@@ -148,6 +150,7 @@ const authUser = asyncHandler( async (req, res) => {
   }
 });
 
+//Logout user / clear cookie
 const logoutUser = (req, res) => {
   res.cookie('jwt', '', {
     httpOnly: true,
@@ -156,4 +159,143 @@ const logoutUser = (req, res) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
-export { registerUser, verifyEmail, authUser ,logoutUser};
+// Get user profile
+const getUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.role === 'admin',
+      role: user.role,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// Update user profile (Self Update)
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      // Hash new password
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      isAdmin: updatedUser.role === 'admin',
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// Get all users
+const getUsers = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+  
+  const keyword = req.query.keyword
+    ? {
+        $or: [
+          { name: { $regex: req.query.keyword, $options: 'i' } },
+          { email: { $regex: req.query.keyword, $options: 'i' } },
+        ],
+      }
+    : {};
+
+  const count = await User.countDocuments({ ...keyword });
+  const users = await User.find({ ...keyword })
+    .select('-password') 
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({ users, page, pages: Math.ceil(count / pageSize) });
+});
+
+// Delete user
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    if (user.role === 'admin') {
+      res.status(400);
+      throw new Error('Cannot delete admin user');
+    }
+    await User.deleteOne({ _id: user._id });
+    res.json({ message: 'User removed' });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// Get user by ID
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password');
+
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// Update user (Admin)
+const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    
+    // Sync isAdmin and role to avoid bugs
+    if (req.body.isAdmin !== undefined) {
+        user.isAdmin = Boolean(req.body.isAdmin);
+        user.role = user.isAdmin ? 'admin' : 'user';
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      role: updatedUser.role,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+export { 
+  registerUser, 
+  verifyEmail, 
+  authUser, 
+  logoutUser, 
+  getUserProfile, 
+  updateUserProfile, 
+  getUsers, 
+  deleteUser, 
+  getUserById, 
+  updateUser 
+};

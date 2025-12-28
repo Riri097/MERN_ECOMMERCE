@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit';
 
 // Helper to update localStorage
 const updateCart = (state) => {
-// calculate prices
   state.itemsPrice = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
   localStorage.setItem('cart', JSON.stringify(state));
 };
@@ -32,8 +31,12 @@ const cartSlice = createSlice({
       state.cartItems = state.cartItems.filter((x) => x._id !== action.payload);
       updateCart(state);
     },
+    clearCartItems: (state, action) => {
+      state.cartItems = [];
+      localStorage.removeItem('cart');
+    },
   },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCartItems } = cartSlice.actions;
 export default cartSlice.reducer;

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { useGetProductDetailsQuery } from '../slices/productsApiSlice';
-import { addToCart } from '../slices/cartSlice'; 
+import { useGetProductDetailsQuery } from '../../slices/productsApiSlice';
+import { addToCart } from '../../slices/cartSlice'; 
 import { FaArrowLeft } from 'react-icons/fa';
 
 const ProductScreen = () => {

@@ -3,7 +3,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
-import userRoutes from './routes/userRoute.js'; 
+import userRoutes from './routes/userRoutes.js'; 
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'; // <--- ADD THIS LINE
 import uploadRoutes from './routes/uploadRoutes.js'; 
 import productRoutes from './routes/productRoutes.js'; 

@@ -1,11 +1,18 @@
-import { apiSlice } from './apiSlice';
 import { USERS_URL } from '../constants';
+import { apiSlice } from './apiSlice';
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/login`,
+        url: `${USERS_URL}/auth`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    register: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}`,
         method: 'POST',
         body: data,
       }),
@@ -16,22 +23,56 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
       }),
     }),
-        register: builder.mutation({
+    verify: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/register`,
+        url: `${USERS_URL}/verify-email`,
         method: 'POST',
         body: data,
       }),
     }),
-    verify: builder.mutation({
+
+    getUsers: builder.query({
+      query: ({ keyword, pageNumber } = {}) => ({
+        url: USERS_URL,
+        params: { keyword, pageNumber },
+      }),
+      providesTags: ['User'],
+      keepUnusedDataFor: 5,
+    }),
+
+    getUserDetails: builder.query({
+      query: (userId) => ({
+        url: `${USERS_URL}/${userId}`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+
+    updateUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/verify`,
-        method: 'POST',
+        url: `${USERS_URL}/${data.userId}`,
+        method: 'PUT',
         body: data,
       }),
+      invalidatesTags: ['User'],
+    }),
+
+    deleteUser: builder.mutation({
+      query: (userId) => ({
+        url: `${USERS_URL}/${userId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'],
     }),
   }),
 });
 
-
-export const { useLoginMutation, useLogoutMutation, useRegisterMutation, useVerifyMutation } = usersApiSlice;
+export const {
+  useLoginMutation,
+  useLogoutMutation,
+  useRegisterMutation,
+  useVerifyMutation,
+  useGetUsersQuery,
+  useGetUserDetailsQuery,
+  useUpdateUserMutation,
+  useDeleteUserMutation, 
+} = usersApiSlice;

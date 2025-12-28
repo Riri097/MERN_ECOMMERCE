@@ -5,17 +5,20 @@ import { Provider } from 'react-redux';
 import store from './store';
 import './index.css';
 import App from './App';
-import HomeScreen from './screens/HomeScreen';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import VerifyScreen from './screens/VerifyScreen';
-import ProductScreen from './screens/ProductScreen'; 
-import CartScreen from './screens/CartScreen'; 
+import HomeScreen from './screens/users/HomeScreen';
+import LoginScreen from './screens/auth/LoginScreen';
+import RegisterScreen from './screens/auth/RegisterScreen';
+import VerifyScreen from './screens/auth/VerifyScreen';
+import ProductScreen from './screens/users/ProductScreen'; 
+import CartScreen from './screens/users/CartScreen'; 
 
 import AdminRoute from './components/AdminRoute';
 import ProductListScreen from './screens/admin/ProductListScreen';
 import ProductEditScreen from './screens/admin/ProductEditScreen'; 
 import ProductCreateScreen from './screens/admin/ProductCreateScreen'; 
+import DashboardScreen from './screens/admin/DashboardScreen';
+import UserListScreen from './screens/admin/UserListScreen';
+import UserEditScreen from './screens/admin/UserEditScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +34,9 @@ const router = createBrowserRouter(
         <Route path="/admin/productlist" element={<ProductListScreen />} />
         <Route path="/admin/product/:id/edit" element={<ProductEditScreen />} />
         <Route path="/admin/product/create" element={<ProductCreateScreen />} />
+        <Route path="/admin/dashboard" element={<DashboardScreen />} />
+        <Route path="/admin/userlist" element={<UserListScreen />} />
+        <Route path="/admin/useredit" element={<UserEditScreen />} />
       </Route> 
     </Route>
   )

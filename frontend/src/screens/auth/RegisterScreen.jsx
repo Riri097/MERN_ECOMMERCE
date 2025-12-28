@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useRegisterMutation } from '../slices/usersApiSlice';
+import { useRegisterMutation } from '../../slices/usersApiSlice';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
