@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoginMutation } from '../../slices/usersApiSlice';
 import { setCredentials } from '../../slices/authSlice';
+import { setCart } from '../../slices/cartSlice'; 
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -31,7 +32,14 @@ const LoginScreen = () => {
       const res = await login({ email, password }).unwrap();
       // 2. Save to Redux/LocalStorage
       dispatch(setCredentials({ ...res }));
-      // 3. Redirect will happen automatically due to useEffect
+
+      // LOAD CART FROM DB
+      if (res.cartItems && res.cartItems.length > 0) {
+        dispatch(setCart(res.cartItems));
+        localStorage.setItem('cart', JSON.stringify({ ...JSON.parse(localStorage.getItem('cart')), cartItems: res.cartItems }));
+      }
+      
+      navigate(redirect);
     } catch (err) {
       alert(err?.data?.message || err.error);
     }

@@ -16,13 +16,13 @@ import {
 } from 'react-icons/fa';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
+import { clearCartItems } from '../slices/cartSlice';
 
 const AdminSidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logoutApiCall] = useLogoutMutation();
 
-  // --- DARK MODE LOGIC ---
   const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
 
   useEffect(() => {
@@ -34,17 +34,19 @@ const AdminSidebar = () => {
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
-  // -----------------------
 
-  const logoutHandler = async () => {
-    try {
-      await logoutApiCall().unwrap();
-      dispatch(logout());
-      navigate('/login');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
+const logoutHandler = async () => {
+  try {
+    await logoutApiCall().unwrap();
+dispatch(logout());
+dispatch(clearCartItems());
+navigate('/login');
+} 
+catch (err) {
+console.error(err);
+}
+};
 
   const NavItem = ({ to, icon: Icon, label }) => (
     <li>

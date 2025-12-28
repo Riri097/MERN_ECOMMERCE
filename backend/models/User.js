@@ -1,6 +1,18 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const cartItemSchema = mongoose.Schema({
+  name: { type: String, required: true },
+  qty: { type: Number, required: true },
+  image: { type: String, required: true },
+  price: { type: Number, required: true },
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  },
+});
+
 const userSchema = mongoose.Schema({
     name : {type: String, required: true},
     email : {type: String, required: true, unique: true},
@@ -10,6 +22,8 @@ const userSchema = mongoose.Schema({
     isVerified: { type: Boolean, default: false },
     emailOTP: { type: String },
     emailOTPExpire: { type: Date },
+
+    cartItems: [cartItemSchema], 
 }, {
     timestamps: true,
 });

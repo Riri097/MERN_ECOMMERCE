@@ -142,7 +142,8 @@ const authUser = asyncHandler( async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      isAdmin: user.role === 'admin', // Helper for frontend
+      isAdmin: user.role === 'admin',
+      cartItems: user.cartItems
     });
   } else {
     res.status(401);
@@ -184,7 +185,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-
+    if (req.body.cartItems) {
+      user.cartItems = req.body.cartItems;
+    }
     if (req.body.password) {
       // Hash new password
       const salt = await bcrypt.genSalt(10);
@@ -199,6 +202,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       email: updatedUser.email,
       role: updatedUser.role,
       isAdmin: updatedUser.role === 'admin',
+      cartItems: updatedUser.cartItems,
     });
   } else {
     res.status(404);

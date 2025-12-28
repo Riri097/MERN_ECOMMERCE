@@ -31,6 +31,11 @@ const cartSlice = createSlice({
       state.cartItems = state.cartItems.filter((x) => x._id !== action.payload);
       updateCart(state);
     },
+    setCart: (state, action) => {
+      state.cartItems = action.payload;
+      state.itemsPrice = state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
+      localStorage.setItem('cart', JSON.stringify(state));
+    },
     clearCartItems: (state, action) => {
       state.cartItems = [];
       localStorage.removeItem('cart');
@@ -38,5 +43,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, clearCartItems } = cartSlice.actions;
+export const { addToCart, removeFromCart, clearCartItems, setCart } = cartSlice.actions;
 export default cartSlice.reducer;
