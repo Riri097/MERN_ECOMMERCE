@@ -86,7 +86,7 @@ console.error(err);
   );
 
   return (
-    <aside className="fixed top-0 left-0 z-40 w-64 h-screen bg-gray-50 dark:bg-slate-900 flex flex-col border-r border-gray-200 dark:border-slate-700 transition-colors duration-300">
+    <aside className="fixed top-0 left-0 z-40 w-64 h-screen bg-gray-50 dark:bg-black flex flex-col border-r border-gray-200 dark:border-slate-700 transition-colors duration-300">
       
       {/* Top Brand */}
       <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-slate-700">

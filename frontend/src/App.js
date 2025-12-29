@@ -54,7 +54,7 @@ useEffect(() => {
   // --- LAYOUT 1: ADMIN DASHBOARD ---
   if (isAdmin) {
     return (
-      <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="flex min-h-screen bg-gray-100 dark:bg-black">
         {/* Fixed Sidebar */}
         <AdminSidebar />
         

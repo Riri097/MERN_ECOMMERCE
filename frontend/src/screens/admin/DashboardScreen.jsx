@@ -13,7 +13,7 @@ const DashboardScreen = () => {
   const productsCount = productsData?.products?.length || 0;
 
   const Card = ({ title, value, icon: Icon, color }) => (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4" style={{ borderColor: color }}>
+    <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-md border-l-4" style={{ borderColor: color }}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-gray-500 dark:text-gray-400 text-sm uppercase font-bold">{title}</p>
@@ -37,7 +37,7 @@ const DashboardScreen = () => {
         <Card title="Total Users" value={usersCount} icon={FaUsers} color="#8B5CF6" />
       </div>
 
-      <div className="mt-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+      <div className="mt-10 bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
         <h2 className="text-xl font-bold mb-4 dark:text-white">System Status</h2>
         <p className="text-gray-600 dark:text-gray-300">System is running smoothly. Database connected.</p>
       </div>
