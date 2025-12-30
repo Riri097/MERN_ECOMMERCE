@@ -59,7 +59,17 @@ const UserSidebar = ({ isOpen, onClose, userInfo }) => {
                 </Link>
               </li>
               
-              {/* Add My Orders link here later */}
+              <li>
+  <Link
+    to="/myorders"
+    onClick={onClose}
+    className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+  >
+    <FaList className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+    <span className="flex-1 ml-3 whitespace-nowrap">My Orders</span>
+  </Link>
+</li>
+
               
               <li>
                 <button onClick={logoutHandler} className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-red-50 dark:hover:bg-red-900/20 group">
