@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { FaTimes, FaUser, FaSignOutAlt, FaList } from 'react-icons/fa';
+import { FaTimes,FaHome , FaUser, FaSignOutAlt, FaList } from 'react-icons/fa';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
 import { clearCartItems } from '../slices/cartSlice';
@@ -51,7 +51,12 @@ const UserSidebar = ({ isOpen, onClose, userInfo }) => {
                 <span className="text-sm text-gray-500 dark:text-gray-400">Signed in as</span>
                 <div className="font-bold text-gray-900 dark:text-white truncate">{userInfo.email}</div>
               </li>
-              
+              <li>
+                <Link to="/" onClick={onClose} className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                  <FaHome className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                  <span className="flex-1 ml-3 whitespace-nowrap">Home</span>
+                </Link>
+              </li>
               <li>
                 <Link to="/profile" onClick={onClose} className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                   <FaUser className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { FaShoppingCart, FaSearch, FaBars, FaUserCircle, FaSun, FaMoon } from 'react-icons/fa';
+import { FaShoppingCart, FaSearch, FaBars, FaUserCircle,FaChevronDown, FaSun, FaMoon } from 'react-icons/fa';
 
 const Header = ({ onOpenUserSidebar }) => {
   const { cartItems } = useSelector((state) => state.cart || { cartItems: [] });
@@ -66,23 +66,33 @@ const Header = ({ onOpenUserSidebar }) => {
             </Link>
 
             {/* User Sidebar Trigger */}
-            <button 
-              onClick={onOpenUserSidebar}
-              className="flex items-center space-x-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 focus:outline-none transition"
-            >
-              {userInfo ? (
-                 <div className="flex items-center gap-2">
-                    <span className="hidden md:block font-medium text-sm max-w-[100px] truncate">{userInfo.name}</span>
-                    {userInfo.image ? (
-                        <img src={userInfo.image} alt="profile" className="w-8 h-8 rounded-full object-cover" />
-                    ) : (
-                        <FaUserCircle size={24} />
-                    )}
-                 </div>
-              ) : (
-                 <FaBars size={24} />
-              )}
-            </button>
+            <button
+  onClick={onOpenUserSidebar}
+  className="flex items-center space-x-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 focus:outline-none transition"
+>
+  {userInfo ? (
+    <div className="flex items-center gap-2">
+      <span className="hidden md:block font-medium text-sm max-w-[100px] truncate">
+        {userInfo.name}
+      </span>
+
+      {userInfo.image ? (
+        <img
+          src={userInfo.image}
+          alt="profile"
+          className="w-8 h-8 rounded-full object-cover"
+        />
+      ) : (
+        <FaUserCircle size={24} />
+      )}
+
+      {/* Down arrow */}
+      <FaChevronDown size={12} className="opacity-70" />
+    </div>
+  ) : (
+    <FaBars size={24} />
+  )}
+</button>
           </div>
         </div>
       </div>
