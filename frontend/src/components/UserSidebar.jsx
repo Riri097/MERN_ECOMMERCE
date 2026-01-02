@@ -33,7 +33,7 @@ const UserSidebar = ({ isOpen, onClose, userInfo }) => {
       )}
 
       {/* Sidebar Drawer */}
-      <div className={`fixed top-0 right-0 z-50 h-screen p-4 overflow-y-auto transition-transform bg-white dark:bg-gray-800 w-80 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 z-50 h-screen p-4 overflow-y-auto transition-transform bg-white dark:bg-black w-80 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         <div className="flex justify-between items-center mb-8">
           <h5 className="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">

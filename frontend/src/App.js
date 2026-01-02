@@ -59,7 +59,7 @@ useEffect(() => {
         <AdminSidebar />
         
         {/* Main Content Area (Pushed right by 64 units) */}
-        <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
+        <main className="py-3">
           {/* Optional: You could add a small top bar here for Dark Mode toggle if you want */}
           <Outlet />
         </main>
@@ -72,7 +72,7 @@ useEffect(() => {
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <Header onOpenUserSidebar={() => setIsUserSidebarOpen(true)} />
       
-      <main className="flex-grow container mx-auto px-4 py-6">
+      <main className="flex-grow">
         <Outlet />
       </main>
       

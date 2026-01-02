@@ -1,101 +1,137 @@
+import { useNavigate, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { useLogoutMutation } from '../slices/usersApiSlice';
+import { logout } from '../slices/authSlice';
+import { clearCartItems } from '../slices/cartSlice';
+import SearchBox from './SearchBox';
+import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { FaShoppingCart, FaSearch, FaBars, FaUserCircle,FaChevronDown, FaSun, FaMoon } from 'react-icons/fa';
 
-const Header = ({ onOpenUserSidebar }) => {
-  const { cartItems } = useSelector((state) => state.cart || { cartItems: [] });
+const Header = () => {
+  const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // --- DARK MODE LOGIC ---
-  const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'dark');
-
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   useEffect(() => {
-    if (darkMode) {
+    if (theme === 'dark') {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
     }
-  }, [darkMode]);
-  // -----------------------
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      dispatch(clearCartItems());
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30 h-16 transition-colors duration-300">
-      <div className="container mx-auto px-4 h-full">
-        <div className="flex justify-between items-center h-full">
+<header className="bg-white/80 dark:bg-gray-900/95 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+        
+        {/* 1. Logo */}
+        <Link to="/" className="text-2xl font-extrabold text-gray-800 dark:text-white tracking-wider flex items-center gap-2">
+          <span className="text-blue-600 dark:text-blue-500">MERN</span>SHOP
+        </Link>
+
+        {/* 2. Search Bar */}
+        <div className="hidden md:block flex-1 max-w-xl mx-8">
+          <SearchBox />
+        </div>
+
+        {/* 3. Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6">
           
-          {/* LOGO */}
-          <Link to="/" className="flex-shrink-0 flex items-center">
-            <span className="text-2xl font-extrabold text-blue-600 dark:text-blue-400 tracking-tighter">
-              MERN<span className="text-gray-700 dark:text-white">SHOP</span>
-            </span>
+          {/* Theme Toggle Button */}
+          <button 
+            onClick={toggleTheme} 
+            className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110"
+          >
+            {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}
+          </button>
+
+          <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Home</Link>
+          <Link to="/search/electronics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Shop</Link>
+          
+          {/* Cart Icon */}
+          <Link to="/cart" className="relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition">
+            <FaShoppingCart className="text-xl" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                {cartItems.reduce((a, c) => a + c.qty, 0)}
+              </span>
+            )}
           </Link>
 
-          {/* SEARCH BAR */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              />
-              <button className="absolute right-0 top-0 mt-2 mr-3 text-gray-500 hover:text-blue-500">
-                <FaSearch />
+          {/* User Profile Dropdown */}
+          {userInfo ? (
+            <div className="relative group">
+              <button className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium focus:outline-none">
+                <FaUser />
+                <span>{userInfo.name.split(' ')[0]}</span>
               </button>
+              
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right border border-gray-100 dark:border-gray-700">
+                <Link to="/profile" className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</Link>
+                {userInfo.isAdmin && (
+                  <Link to="/admin/dashboard" className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Admin Dashboard</Link>
+                )}
+                <button onClick={logoutHandler} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">Logout</button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium">Sign In</Link>
+          )}
+        </nav>
 
-          {/* RIGHT ICONS */}
-          <div className="flex items-center space-x-5">
-            
-            {/* Dark Mode Toggle */}
-            <button onClick={() => setDarkMode(!darkMode)} className="text-gray-600 dark:text-gray-300 hover:text-blue-500 transition">
-              {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
-            </button>
-
-            {/* Cart */}
-            <Link to="/cart" className="relative text-gray-600 dark:text-gray-300 hover:text-blue-500 transition">
-              <FaShoppingCart size={22} />
-              {cartItems.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItems.reduce((acc, item) => acc + item.qty, 0)}
-                </span>
-              )}
-            </Link>
-
-            {/* User Sidebar Trigger */}
-            <button
-  onClick={onOpenUserSidebar}
-  className="flex items-center space-x-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 focus:outline-none transition"
->
-  {userInfo ? (
-    <div className="flex items-center gap-2">
-      <span className="hidden md:block font-medium text-sm max-w-[100px] truncate">
-        {userInfo.name}
-      </span>
-
-      {userInfo.image ? (
-        <img
-          src={userInfo.image}
-          alt="profile"
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      ) : (
-        <FaUserCircle size={24} />
-      )}
-
-      {/* Down arrow */}
-      <FaChevronDown size={12} className="opacity-70" />
-    </div>
-  ) : (
-    <FaBars size={24} />
-  )}
-</button>
-          </div>
+        {/* 4. Mobile Menu Button */}
+        <div className="flex items-center gap-4 md:hidden">
+           {/* Mobile Theme Toggle */}
+           <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300">
+            {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}
+          </button>
+          
+          <button 
+            className="text-gray-600 dark:text-white text-2xl"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-gray-900 border-t border-gray-800 py-4 px-4 space-y-4">
+           <SearchBox />
+           <Link to="/" className="block text-gray-300 py-2">Home</Link>
+           <Link to="/cart" className="block text-gray-300 py-2">Cart ({cartItems.length})</Link>
+           {userInfo ? (
+             <>
+               <Link to="/profile" className="block text-gray-300 py-2">Profile</Link>
+               <button onClick={logoutHandler} className="block text-red-500 py-2">Logout</button>
+             </>
+           ) : (
+             <Link to="/login" className="block text-gray-300 py-2">Sign In</Link>
+           )}
+        </div>
+      )}
     </header>
   );
 };
