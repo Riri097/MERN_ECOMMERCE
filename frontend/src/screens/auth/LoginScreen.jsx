@@ -1,101 +1,75 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLoginMutation } from '../../slices/usersApiSlice';
-import { setCredentials } from '../../slices/authSlice';
-import { setCart } from '../../slices/cartSlice'; 
+import React, { useEffect } from 'react'; // Explicitly import React
+import { useSelector } from 'react-redux'; 
+import { Outlet } from 'react-router-dom';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import AdminSidebar from '../../components/AdminSidebar';
+import { useProfileMutation } from '../../slices/usersApiSlice'; 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const LoginScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const [login, { isLoading }] = useLoginMutation();
+const App = () => {
   const { userInfo } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
+  const [updateProfile] = useProfileMutation();
 
-  const { search } = useLocation();
-  const sp = new URLSearchParams(search);
-  const redirect = sp.get('redirect') || '/';
+  const isAdmin = userInfo && userInfo.role === 'admin';
 
+  // --- AUTO-SAVE CART LOGIC ---
   useEffect(() => {
-    if (userInfo) {
-      navigate(redirect);
+    if (userInfo && cartItems.length > 0) {
+      const saveCartToBackend = async () => {
+        try {
+          const formattedCartItems = cartItems.map(item => ({
+            name: item.name,
+            qty: item.qty,
+            image: item.image,
+            price: item.price,
+            product: item._id || item.product 
+          }));
+
+          await updateProfile({
+            name: userInfo.name,
+            email: userInfo.email,
+            cartItems: formattedCartItems, 
+          }).unwrap();
+        } catch (err) {
+          console.error('Failed to save cart:', err);
+        }
+      };
+
+      const timer = setTimeout(() => {
+        saveCartToBackend();
+      }, 2000);
+
+      return () => clearTimeout(timer);
     }
-  }, [navigate, redirect, userInfo]);
+  }, [cartItems, userInfo, updateProfile]);
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      // 1. Call the API
-      const res = await login({ email, password }).unwrap();
-      // 2. Save to Redux/LocalStorage
-      dispatch(setCredentials({ ...res }));
-
-      // LOAD CART FROM DB
-      if (res.cartItems && res.cartItems.length > 0) {
-        dispatch(setCart(res.cartItems));
-        localStorage.setItem('cart', JSON.stringify({ ...JSON.parse(localStorage.getItem('cart')), cartItems: res.cartItems }));
-      }
-      
-      navigate(redirect);
-    } catch (err) {
-      alert(err?.data?.message || err.error);
-    }
-  };
-
-  return (
-    <div className="flex justify-center items-center min-h-[80vh]">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold mb-6 text-center dark:text-white">Sign In</h1>
-
-        <form onSubmit={submitHandler} className="space-y-4">
-          {/* Email Input */}
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
-            <input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-            />
-          </div>
-
-          {/* Password Input */}
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">Password</label>
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:opacity-50"
-          >
-            {isLoading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <p className="text-gray-600 dark:text-gray-400">
-            New Customer?{' '}
-            <Link to="/register" className="text-blue-500 hover:underline">
-              Register
-            </Link>
-          </p>
-        </div>
+  // --- LAYOUT 1: ADMIN DASHBOARD ---
+  if (isAdmin) {
+    return (
+      <div className="flex min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
+        <AdminSidebar />
+        <main className="flex-1 py-3 px-4">
+          <Outlet />
+        </main>
+        <ToastContainer />
       </div>
+    );
+  }
+
+  // --- LAYOUT 2: CUSTOMER STOREFRONT ---
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
+      <Header />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+      <ToastContainer />
     </div>
   );
 };
 
-export default LoginScreen;
+export default App;

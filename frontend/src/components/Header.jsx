@@ -42,12 +42,12 @@ const Header = () => {
   };
 
   return (
-<header className="bg-white/80 dark:bg-gray-900/95 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+<header className="bg-white/80 dark:bg-black backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         
         {/* 1. Logo */}
         <Link to="/" className="text-2xl font-extrabold text-gray-800 dark:text-white tracking-wider flex items-center gap-2">
-          <span className="text-blue-600 dark:text-blue-500">MERN</span>SHOP
+          <span className="text-blue-600 dark:text-blue-400">SHOP</span>EASY
         </Link>
 
         {/* 2. Search Bar */}
@@ -58,6 +58,11 @@ const Header = () => {
         {/* 3. Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           
+          
+
+          <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Home</Link>
+          <Link to="/search/electronics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Shop</Link>
+          
           {/* Theme Toggle Button */}
           <button 
             onClick={toggleTheme} 
@@ -66,9 +71,6 @@ const Header = () => {
             {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}
           </button>
 
-          <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Home</Link>
-          <Link to="/search/electronics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Shop</Link>
-          
           {/* Cart Icon */}
           <Link to="/cart" className="relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition">
             <FaShoppingCart className="text-xl" />

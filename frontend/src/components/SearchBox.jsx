@@ -25,7 +25,7 @@ const SearchBox = () => {
         onChange={(e) => setKeyword(e.target.value)}
         value={keyword}
         placeholder="Search products..."
-        className="w-full bg-gray-800 text-white border border-gray-700 rounded-full py-2 pl-5 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+        className="w-full bg-white/80 dark:bg-black text-white border border-gray-400 rounded-full py-2 pl-5 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
       />
       <button
         type="submit"
