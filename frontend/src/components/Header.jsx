@@ -42,7 +42,7 @@ const Header = () => {
   };
 
   return (
-<header className="bg-white/80 dark:bg-black backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+    <header className="bg-white/80 dark:bg-black backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         
         {/* 1. Logo */}
@@ -51,19 +51,30 @@ const Header = () => {
         </Link>
 
         {/* 2. Search Bar */}
-        <div className="hidden md:block flex-1 max-w-xl mx-8">
+        <div className="hidden md:block flex-1 max-w-sm mx-8">
           <SearchBox />
         </div>
 
         {/* 3. Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           
+          <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">
+            Home
+          </Link>
           
+          <Link to="/shop" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">
+            Shop
+          </Link>
 
-          <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Home</Link>
-          <Link to="/search/electronics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">Shop</Link>
+          {/* --- ORDERS LINK (Separate from Profile) --- */}
+          {userInfo && (
+            <Link to="order/:id" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">
+              Orders
+            </Link>
+          )}
+          {/* ------------------------------------------- */}
           
-          {/* Theme Toggle Button */}
+          {/* Theme Toggle */}
           <button 
             onClick={toggleTheme} 
             className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110"
@@ -71,7 +82,7 @@ const Header = () => {
             {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}
           </button>
 
-          {/* Cart Icon */}
+          {/* Cart */}
           <Link to="/cart" className="relative text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white transition">
             <FaShoppingCart className="text-xl" />
             {cartItems.length > 0 && (
@@ -81,7 +92,7 @@ const Header = () => {
             )}
           </Link>
 
-          {/* User Profile Dropdown */}
+          {/* User Profile Dropdown (Profile Only) */}
           {userInfo ? (
             <div className="relative group">
               <button className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium focus:outline-none">
@@ -90,11 +101,20 @@ const Header = () => {
               </button>
               
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right border border-gray-100 dark:border-gray-700">
-                <Link to="/profile" className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</Link>
+                {/* Profile Settings Link */}
+                <Link to="/profile" className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  Profile Settings
+                </Link>
+                
                 {userInfo.isAdmin && (
-                  <Link to="/admin/dashboard" className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Admin Dashboard</Link>
+                  <Link to="/admin/dashboard" className="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    Admin Dashboard
+                  </Link>
                 )}
-                <button onClick={logoutHandler} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">Logout</button>
+                
+                <button onClick={logoutHandler} className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  Logout
+                </button>
               </div>
             </div>
           ) : (
@@ -102,9 +122,8 @@ const Header = () => {
           )}
         </nav>
 
-        {/* 4. Mobile Menu Button */}
+        {/* 4. Mobile Menu */}
         <div className="flex items-center gap-4 md:hidden">
-           {/* Mobile Theme Toggle */}
            <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300">
             {theme === 'dark' ? <FaSun size={20} /> : <FaMoon size={20} />}
           </button>
@@ -122,20 +141,27 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-gray-900 border-t border-gray-800 py-4 px-4 space-y-4">
            <SearchBox />
-           <Link to="/" className="block text-gray-300 py-2">Home</Link>
-           <Link to="/cart" className="block text-gray-300 py-2">Cart ({cartItems.length})</Link>
+           <Link to="/" className="block text-gray-300 py-2" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+           <Link to="/shop" className="block text-gray-300 py-2" onClick={() => setIsMobileMenuOpen(false)}>Shop</Link>
+           
+           {userInfo && (
+             <Link to="/profile" className="block text-gray-300 py-2" onClick={() => setIsMobileMenuOpen(false)}>Orders</Link>
+           )}
+
+           <Link to="/cart" className="block text-gray-300 py-2" onClick={() => setIsMobileMenuOpen(false)}>Cart ({cartItems.length})</Link>
+           
            {userInfo ? (
              <>
-               <Link to="/profile" className="block text-gray-300 py-2">Profile</Link>
+               <Link to="/profile" className="block text-gray-300 py-2" onClick={() => setIsMobileMenuOpen(false)}>Profile Settings</Link>
                <button onClick={logoutHandler} className="block text-red-500 py-2">Logout</button>
              </>
            ) : (
-             <Link to="/login" className="block text-gray-300 py-2">Sign In</Link>
+             <Link to="/login" className="block text-gray-300 py-2" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
            )}
         </div>
       )}
     </header>
-  );
+    );
 };
 
 export default Header;

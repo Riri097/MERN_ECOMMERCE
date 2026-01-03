@@ -1,75 +1,86 @@
-import React, { useEffect } from 'react'; // Explicitly import React
-import { useSelector } from 'react-redux'; 
-import { Outlet } from 'react-router-dom';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import AdminSidebar from '../../components/AdminSidebar';
-import { useProfileMutation } from '../../slices/usersApiSlice'; 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLoginMutation } from '../../slices/usersApiSlice';
+import { setCredentials } from '../../slices/authSlice';
+import { toast } from 'react-toastify';
 
-const App = () => {
+const LoginScreen = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [login, { isLoading }] = useLoginMutation();
+
   const { userInfo } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.cart);
-  const [updateProfile] = useProfileMutation();
 
-  const isAdmin = userInfo && userInfo.role === 'admin';
+  const { search } = useLocation();
+  const sp = new URLSearchParams(search);
+  const redirect = sp.get('redirect') || '/';
 
-  // --- AUTO-SAVE CART LOGIC ---
   useEffect(() => {
-    if (userInfo && cartItems.length > 0) {
-      const saveCartToBackend = async () => {
-        try {
-          const formattedCartItems = cartItems.map(item => ({
-            name: item.name,
-            qty: item.qty,
-            image: item.image,
-            price: item.price,
-            product: item._id || item.product 
-          }));
-
-          await updateProfile({
-            name: userInfo.name,
-            email: userInfo.email,
-            cartItems: formattedCartItems, 
-          }).unwrap();
-        } catch (err) {
-          console.error('Failed to save cart:', err);
-        }
-      };
-
-      const timer = setTimeout(() => {
-        saveCartToBackend();
-      }, 2000);
-
-      return () => clearTimeout(timer);
+    if (userInfo) {
+      navigate(redirect);
     }
-  }, [cartItems, userInfo, updateProfile]);
+  }, [navigate, redirect, userInfo]);
 
-  // --- LAYOUT 1: ADMIN DASHBOARD ---
-  if (isAdmin) {
-    return (
-      <div className="flex min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
-        <AdminSidebar />
-        <main className="flex-1 py-3 px-4">
-          <Outlet />
-        </main>
-        <ToastContainer />
-      </div>
-    );
-  }
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate(redirect);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
-  // --- LAYOUT 2: CUSTOMER STOREFRONT ---
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
-      <Header />
-      <main className="flex-grow">
-        <Outlet />
-      </main>
-      <Footer />
-      <ToastContainer />
-    </div>
-  );
-};
+    <div className="flex items-center justify-center min-h-[60vh] py-12">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">Sign In</h1>
 
-export default App;
+        <form onSubmit={submitHandler}>
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2 font-medium" htmlFor="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2 font-medium" htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              className="w-full p-3 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            disabled={isLoading}
+            type="submit"
+            className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition duration-200 shadow-lg shadow-blue-500/30"
+          >
+            {isLoading ? 'Signing In...' : 'Sign In'}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-600 dark:text-gray-400">
+            New Customer?{' '}
+            <Link to={redirect ? `/register?redirect=${redirect}` : '/register'} className="text-blue-600 font-bold hover:underline">
+              Register
+           </Link> </p> </div> </div> </div> ); };
+
+export default LoginScreen;

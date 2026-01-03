@@ -1,6 +1,6 @@
 import { useEffect } from 'react'; 
 import { useSelector } from 'react-redux'; 
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom'; // Added useLocation
 import Header from './components/Header';
 import Footer from './components/Footer';
 import AdminSidebar from './components/AdminSidebar';
@@ -12,8 +12,13 @@ const App = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
   const [updateProfile] = useProfileMutation();
+  
+  const location = useLocation(); // Get current URL path
 
-  const isAdmin = userInfo && userInfo.role === 'admin';
+  // FIX 1: Check for 'isAdmin' boolean (standard MERN), not 'role' string
+  // FIX 2: Only use Admin Layout if user is Admin AND on an /admin route
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminUser = userInfo && userInfo.isAdmin; 
 
   // --- AUTO-SAVE CART LOGIC ---
   useEffect(() => {
@@ -29,6 +34,7 @@ const App = () => {
           }));
 
           await updateProfile({
+            _id: userInfo._id, // Ensure ID is sent
             name: userInfo.name,
             email: userInfo.email,
             cartItems: formattedCartItems, 
@@ -46,12 +52,12 @@ const App = () => {
     }
   }, [cartItems, userInfo, updateProfile]);
 
-  // --- LAYOUT 1: ADMIN DASHBOARD ---
-  if (isAdmin) {
+  // --- LAYOUT 1: ADMIN DASHBOARD (Only on /admin routes) ---
+  if (isAdminUser && isAdminRoute) {
     return (
       <div className="flex min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
         <AdminSidebar />
-        <main className="flex-1 py-3 px-4">
+        <main className="flex-1 py-3 px-4 overflow-y-auto">
           <Outlet />
         </main>
         <ToastContainer />
@@ -59,22 +65,17 @@ const App = () => {
     );
   }
 
-  // --- LAYOUT 2: CUSTOMER STOREFRONT ---
+  // --- LAYOUT 2: CUSTOMER STOREFRONT (For everyone else) ---
   return (
-    // CHANGED: dark:bg-gray-900 -> dark:bg-black (Pure Black)
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
-      
-      {/* Removed onOpenUserSidebar prop */}
       <Header />
-      
       <main className="flex-grow">
         <Outlet />
       </main>
-      
       <Footer />
-      <ToastContainer />
-    </div>
-  );
+        <ToastContainer />
+</div>
+);
 };
 
 export default App;
