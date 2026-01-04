@@ -55,11 +55,16 @@ const App = () => {
   // --- LAYOUT 1: ADMIN DASHBOARD (Only on /admin routes) ---
   if (isAdminUser && isAdminRoute) {
     return (
-      <div className="flex min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white">
+      // 1. Flex container for side-by-side layout
+      <div className="flex h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white overflow-hidden">
+        
+        {/* 2. Sidebar (Fixed width handled inside component) */}
         <AdminSidebar />
-        <main className="flex-1 py-3 px-4 overflow-y-auto">
+
+        <main className="flex-1 overflow-y-auto p-8">
           <Outlet />
         </main>
+        
         <ToastContainer />
       </div>
     );

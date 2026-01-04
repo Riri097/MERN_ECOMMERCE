@@ -15,6 +15,7 @@ import ProductScreen from './screens/users/ProductScreen';
 import CartScreen from './screens/users/CartScreen';
 import ShopScreen from './screens/users/ShopScreen';
 
+
 // --- PRIVATE SCREENS (Logged In Users) ---
 import PrivateRoute from './components/PrivateRoute';
 import ShippingScreen from './screens/users/ShippingScreen';
@@ -31,7 +32,8 @@ import ProductCreateScreen from './screens/admin/ProductCreateScreen';
 import DashboardScreen from './screens/admin/DashboardScreen';
 import UserListScreen from './screens/admin/UserListScreen';
 import UserEditScreen from './screens/admin/UserEditScreen';
-// Note: You are missing OrderListScreen import here, we will address that later
+import OrderListScreen from './screens/admin/OrderListScreen'; // Import this
+import MyOrdersScreen from './screens/users/MyOrderScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -57,6 +59,7 @@ const router = createBrowserRouter(
         <Route path="/payment" element={<PaymentScreen />} />
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
         <Route path="/order/:id" element={<OrderScreen />} />
+        <Route path="/myorders" element={<MyOrdersScreen />} />
       </Route>
 
       {/* --- ADMIN ROUTES --- */}
@@ -73,8 +76,7 @@ const router = createBrowserRouter(
         <Route path="/admin/userlist" element={<UserListScreen />} />
         <Route path="/admin/user/:id/edit" element={<UserEditScreen />} /> {/* FIXED: Added /:id */}
         
-        {/* Orders (You are missing the OrderListScreen file in your folder structure) */}
-        {/* <Route path="/admin/orderlist" element={<OrderListScreen />} /> */}
+        <Route path="/admin/orderlist" element={<OrderListScreen />} />
       </Route>
     </Route>
   )

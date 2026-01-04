@@ -1,14 +1,54 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/Product.js';
 
+//Fetch all products
+const getProducts = asyncHandler(async (req, res) => {
+  const pageSize = process.env.PAGINATION_LIMIT || 8;
+  const page = Number(req.query.pageNumber) || 1;
+
+const keyword = req.query.keyword
+    ? {
+        $or: [
+          { name: { $regex: req.query.keyword, $options: 'i' } },
+          { brand: { $regex: req.query.keyword, $options: 'i' } },
+          { category: { $regex: req.query.keyword, $options: 'i' } },
+        ],
+      }
+    : {};
+
+  const count = await Product.countDocuments({ ...keyword });
+  const products = await Product.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({ products, page, pages: Math.ceil(count / pageSize) });
+});
+
+// Fetch single product
+const getProductById = asyncHandler(async (req, res) => {
+  // Added check to prevent CastError crash
+  if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      return res.json(product);
+    }
+  }
+  res.status(404);
+  throw new Error('Product not found');
+});
+
+// @desc    Create a product
+// @route   POST /api/products
+// @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
   const { name, price, description, image, brand, category, countInStock } = req.body;
+  
+  // Basic validation
   if (!name || !price || !category) {
     res.status(400);
     throw new Error('Please provide name, price, and category');
   }
 
-  // Create the Product
   const product = new Product({
     name,
     price,
@@ -25,52 +65,23 @@ const createProduct = asyncHandler(async (req, res) => {
   res.status(201).json(createdProduct);
 });
 
-const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = process.env.PAGINATION_LIMIT || 8;
-  const page = Number(req.query.pageNumber) || 1;
-
-  const keyword = req.query.keyword
-    ? { name: { $regex: req.query.keyword, $options: 'i' } }
-    : {};
-
-  const category = req.query.category && req.query.category !== 'All'
-    ? { category: req.query.category } 
-    : {};
-
-  const count = await Product.countDocuments({ ...keyword, ...category });
-  
-  const products = await Product.find({ ...keyword, ...category })
-    .limit(pageSize)
-    .skip(pageSize * (page - 1));
-
-  res.json({ products, page, pages: Math.ceil(count / pageSize) });
-});
-
-const getProductById = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404);
-    throw new Error('Product not found');
-  }
-});
-
+// @desc    Update a product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+// --- THIS WAS MISSING ---
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } =
-    req.body;
+  const { name, price, description, image, brand, category, countInStock } = req.body;
 
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.image = image;
-    product.brand = brand;
-    product.category = category;
-    product.countInStock = countInStock;
+    product.name = name || product.name;
+    product.price = price || product.price;
+    product.description = description || product.description;
+    product.image = image || product.image;
+    product.brand = brand || product.brand;
+    product.category = category || product.category;
+    product.countInStock = countInStock || product.countInStock;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -79,13 +90,35 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new Error('Product not found');
   }
 });
+// ------------------------
 
+// @desc    Delete a product
+// @route   DELETE /api/products/:id
+// @access  Private/Admin
+const deleteProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if (product) {
+    await Product.deleteOne({ _id: product._id });
+    res.json({ message: 'Product removed' });
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Private
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
 
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    if (!product.reviews) {
+      product.reviews = [];
+    }
 
     const alreadyReviewed = product.reviews.find(
       (r) => r.user.toString() === req.user._id.toString()
@@ -102,9 +135,11 @@ const createProductReview = asyncHandler(async (req, res) => {
       comment,
       user: req.user._id,
     };
-        product.reviews.push(review);
+
+    product.reviews.push(review);
 
     product.numReviews = product.reviews.length;
+
     product.rating =
       product.reviews.reduce((acc, item) => item.rating + acc, 0) /
       product.reviews.length;
@@ -117,35 +152,29 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get top rated products
+// @route   GET /api/products/top
+// @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({}).sort({ rating: -1 }).limit(3);
   res.json(products);
 });
 
+// @desc    Get all categories
+// @route   GET /api/products/categories
+// @access  Public
 const getCategories = asyncHandler(async (req, res) => {
   const categories = await Product.find().distinct('category');
   res.json(categories);
-});
-
-const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  if (product) {
-    await Product.deleteOne({ _id: product._id });
-    res.json({ message: 'Product removed' });
-  } else {
-    res.status(404);
-    throw new Error('Product not found');
-  }
 });
 
 export {
   getProducts,
   getProductById,
   createProduct,
-  updateProduct,
+  updateProduct, 
   deleteProduct,
-  createProductReview, 
-  getTopProducts,     
-  getCategories,       
+  createProductReview,
+getTopProducts,
+getCategories,
 };

@@ -1,22 +1,10 @@
 import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  qty: {
-    type: Number,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
+  name: { type: String, required: true },
+  qty: { type: Number, required: true },
+  image: { type: String, required: true },
+  price: { type: Number, required: true },
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
@@ -31,37 +19,19 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    orderItems: [orderItemSchema],
+    
+    shippingAddress: { type: String, required: true }, 
+    paymentMethod: { type: String, required: true },
 
-    orderItems: {
-      type: [orderItemSchema],
-      required: true,
-    },
+    itemsPrice: { type: Number, required: true, default: 0.0 },
+    shippingPrice: { type: Number, required: true, default: 0.0 },
+    totalPrice: { type: Number, required: true, default: 0.0 },
 
-    shippingAddress: {
-      type: String,
-      required: true,
-    },
-
-    paymentMethod: {
-      type: String,
-      required: true,
-    },
-
-    totalPrice: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-
-    isPaid: {
-      type: Boolean,
-      default: false,
-    },
-
-    isDelivered: {
-      type: Boolean,
-      default: false,
-    },
+    isPaid: { type: Boolean, default: false },
+    paidAt: { type: Date },
+    isDelivered: { type: Boolean, default: false },
+    deliveredAt: { type: Date },
   },
   {
     timestamps: true,

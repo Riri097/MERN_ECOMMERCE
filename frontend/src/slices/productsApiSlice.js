@@ -24,13 +24,15 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         url: `${PRODUCTS_URL}/${productId}`,
       }),
       keepUnusedDataFor: 5,
+      providesTags: (result, error, arg) => [{ type: 'Product', id: arg }],
     }),
 
     // 3. Create Product (Admin)
     createProduct: builder.mutation({
-      query: () => ({
+      query: (data) => ({
         url: PRODUCTS_URL,
         method: 'POST',
+        body: data,
       }),
       invalidatesTags: ['Product'],
     }),
@@ -42,7 +44,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ['Product'],
+      invalidatesTags: (result, error, arg) => [{ type: 'Product', id: arg.productId }],
     }),
 
     // 5. Upload Image (Admin)
@@ -70,7 +72,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Product'], 
+      invalidatesTags: (result, error, arg) => [{ type: 'Product', id: arg.productId }],
     }),
 
     // 8. Get Top Rated Products (Carousel)

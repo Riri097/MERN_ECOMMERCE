@@ -66,13 +66,11 @@ const Header = () => {
             Shop
           </Link>
 
-          {/* --- ORDERS LINK (Separate from Profile) --- */}
           {userInfo && (
-            <Link to="order/:id" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">
+            <Link to="/myorders" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-white font-medium transition">
               Orders
             </Link>
           )}
-          {/* ------------------------------------------- */}
           
           {/* Theme Toggle */}
           <button 

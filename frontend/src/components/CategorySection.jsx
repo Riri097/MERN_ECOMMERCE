@@ -1,36 +1,44 @@
 import { Link } from 'react-router-dom';
-import { FaMobileAlt, FaLaptop, FaCamera, FaHeadphones, FaGamepad, FaTv } from 'react-icons/fa';
+import { FaMobileAlt, FaCamera, FaHeadphones, FaGamepad, FaTv } from 'react-icons/fa';
 
 const categories = [
-  { name: 'Electronics', icon: <FaLaptop />, path: '/search/electronics' },
   { name: 'Phones', icon: <FaMobileAlt />, path: '/search/phone' },
   { name: 'Cameras', icon: <FaCamera />, path: '/search/camera' },
-  { name: 'Audio', icon: <FaHeadphones />, path: '/search/headphone' },
+  { name: 'Headphones', icon: <FaHeadphones />, path: '/search/headphone' },
   { name: 'Gaming', icon: <FaGamepad />, path: '/search/gaming' },
   { name: 'TV', icon: <FaTv />, path: '/search/tv' },
 ];
 
 const CategorySection = () => {
   return (
-    <div className="py-10">
-      <h2 className="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">
+    <div className="py-12">
+      <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-white">
         Shop by Category
       </h2>
-      <div className="flex flex-wrap justify-center gap-8">
+
+      <div className="flex flex-wrap justify-center gap-10">
         {categories.map((cat) => (
-          <Link 
-            key={cat.name} 
+          <Link
+            key={cat.name}
             to={cat.path}
-            className="group flex flex-col items-center"
+            className="group flex flex-col items-center transform transition-transform duration-300 hover:-translate-y-2"
           >
-            {/* Circular Icon Container */}
-            <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-3xl text-gray-600 dark:text-gray-300 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-md group-hover:shadow-lg">
+            {/* Circular Icon with border */}
+            <div className="w-24 h-24 rounded-full flex items-center justify-center text-4xl 
+                            text-gray-600 dark:text-gray-300 
+                            border-2 border-black dark:border-white 
+                            group-hover:border-blue-600 dark:group-hover:border-blue-400 
+                            transition-all duration-300">
               {cat.icon}
             </div>
+
             {/* Label */}
-            <span className="mt-3 font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-600 transition-colors">
+            <span className="mt-4 font-semibold text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-lg">
               {cat.name}
             </span>
+
+            {/* Optional small hover underline */}
+            <span className="block w-0 h-1 bg-blue-600 rounded mt-1 group-hover:w-full transition-all duration-300"></span>
           </Link>
         ))}
       </div>

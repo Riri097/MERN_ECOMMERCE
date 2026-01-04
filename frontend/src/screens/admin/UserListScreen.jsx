@@ -60,7 +60,6 @@ const UserListScreen = () => {
             <table className="min-w-full leading-normal">
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-left">ID</th>
                   <th className="py-3 px-6 text-left">NAME</th>
                   <th className="py-3 px-6 text-left">EMAIL</th>
                   <th className="py-3 px-6 text-center">ADMIN</th>
@@ -69,11 +68,15 @@ const UserListScreen = () => {
               </thead>
               <tbody className="text-gray-600 dark:text-gray-200 text-sm font-light">
                 {data.users.map((user) => (
-                  <tr key={user._id} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <td className="py-3 px-6 text-left text-xs">{user._id}</td>
+                  <tr
+                    key={user._id}
+                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  >
                     <td className="py-3 px-6 text-left font-medium">{user.name}</td>
                     <td className="py-3 px-6 text-left">
-                      <a href={`mailto:${user.email}`} className="text-blue-500">{user.email}</a>
+                      <a href={`mailto:${user.email}`} className="text-blue-500">
+                        {user.email}
+                      </a>
                     </td>
                     <td className="py-3 px-6 text-center">
                       {user.role === 'admin' ? (
@@ -83,14 +86,18 @@ const UserListScreen = () => {
                       )}
                     </td>
                     <td className="py-3 px-6 text-center flex justify-center items-center space-x-4">
-                      {/* Edit Button */}
-                      <Link to={`/admin/user/${user._id}/edit`} className="text-blue-500 hover:text-blue-700">
+                      <Link
+                        to={`/admin/user/${user._id}/edit`}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
                         <FaEdit />
                       </Link>
 
-                      {/* Delete Button (only if not admin) */}
                       {!user.isAdmin && (
-                        <button onClick={() => deleteHandler(user._id)} className="text-red-500 hover:text-red-700 transition">
+                        <button
+                          onClick={() => deleteHandler(user._id)}
+                          className="text-red-500 hover:text-red-700 transition"
+                        >
                           <FaTrash />
                         </button>
                       )}

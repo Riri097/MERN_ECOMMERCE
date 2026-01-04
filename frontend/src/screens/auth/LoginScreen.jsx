@@ -22,7 +22,11 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (userInfo) {
-      navigate(redirect);
+      if (userInfo.isAdmin && redirect === '/') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate(redirect);
+      }
     }
   }, [navigate, redirect, userInfo]);
 

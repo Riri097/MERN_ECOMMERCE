@@ -13,7 +13,6 @@ const PlaceOrderScreen = () => {
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
-  // --- PRICE CALCULATOR ---
   const addDecimals = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2);
   };
@@ -22,7 +21,6 @@ const PlaceOrderScreen = () => {
   const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 10); // Free shipping over $100
   const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)));
   const totalPrice = (Number(itemsPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2);
-  // ------------------------
 
   useEffect(() => {
     if (!cart.shippingAddress) {

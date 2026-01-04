@@ -35,18 +35,16 @@ const AdminSidebar = () => {
     }
   }, [darkMode]);
 
-
-const logoutHandler = async () => {
-  try {
-    await logoutApiCall().unwrap();
-dispatch(logout());
-dispatch(clearCartItems());
-navigate('/login');
-} 
-catch (err) {
-console.error(err);
-}
-};
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      dispatch(clearCartItems());
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const NavItem = ({ to, icon: Icon, label }) => (
     <li>
@@ -56,7 +54,7 @@ console.error(err);
           `flex items-center justify-between p-3 rounded-lg transition
           ${
             isActive
-              ? 'bg-amber-50 text-amber-600 dark:bg-slate-800 dark:text-amber-400'
+              ? 'bg-blue-50 text-blue-600 dark:bg-slate-800 dark:text-blue-400'
               : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-800'
           }`
         }
@@ -67,17 +65,15 @@ console.error(err);
               <Icon
                 className={`w-5 h-5 ${
                   isActive
-                    ? 'text-amber-600 dark:text-amber-400'
-                    : 'text-gray-400 group-hover:text-amber-500'
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-gray-400 group-hover:text-blue-500'
                 }`}
               />
-              <span className="ml-3">
-                {label}
-              </span>
+              <span className="ml-3">{label}</span>
             </div>
 
             {isActive && (
-              <FaChevronRight className="w-3 h-3 text-amber-500 dark:text-amber-400" />
+              <FaChevronRight className="w-3 h-3 text-blue-500 dark:text-blue-400" />
             )}
           </>
         )}
@@ -86,20 +82,20 @@ console.error(err);
   );
 
   return (
-    <aside className="fixed top-0 left-0 z-40 w-64 h-screen bg-gray-50 dark:bg-black flex flex-col border-r border-gray-200 dark:border-slate-700 transition-colors duration-300">
+    <aside className="w-64 flex-shrink-0 bg-gray-50 dark:bg-black flex flex-col border-r border-gray-200 dark:border-slate-700 transition-colors duration-300">
       
       {/* Top Brand */}
       <div className="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-slate-700">
         <div className="flex items-center">
-          <FaStore className="text-amber-600 dark:text-amber-400 text-xl mr-2" />
+          <FaStore className="text-blue-600 dark:text-blue-400 text-xl mr-2" />
           <span className="text-xl font-bold text-gray-800 dark:text-gray-100">
-            Admin<span className="text-amber-600 dark:text-amber-400">Panel</span>
+            Admin<span className="text-blue-600 dark:text-blue-400">Panel</span>
           </span>
         </div>
 
         <button
           onClick={() => setDarkMode(!darkMode)}
-          className="text-gray-500 hover:text-amber-600 dark:text-gray-300 dark:hover:text-amber-400 transition"
+          className="text-gray-500 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition"
           aria-label="Toggle Theme"
         >
           {darkMode ? <FaSun className="w-5 h-5" /> : <FaMoon className="w-5 h-5" />}
@@ -112,7 +108,7 @@ console.error(err);
           <NavItem to="/admin/dashboard" icon={FaTachometerAlt} label="Dashboard" />
           <NavItem to="/admin/productlist" icon={FaBoxOpen} label="All Products" />
           <NavItem to="/admin/product/create" icon={FaPlusCircle} label="Add Product" />
-          <NavItem to="/" icon={FaExternalLinkAlt}label="View Live Store" target="_blank" className="text-green-400 border border-dashed border-gray-700"/>
+          <NavItem to="/" icon={FaExternalLinkAlt} label="View Live Store" />
           <NavItem to="/admin/userlist" icon={FaUsers} label="Users List" />
           <NavItem to="/admin/orderlist" icon={FaClipboardList} label="Orders" />
         </ul>

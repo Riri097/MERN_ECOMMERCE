@@ -61,7 +61,7 @@ const Hero = () => {
 
             {/* Shop Button */}
             <Link 
-              to="/search/electronics" 
+              to="/shop" 
               className="group flex items-center gap-2 text-gray-900 dark:text-white font-bold hover:text-blue-600 dark:hover:text-blue-400 transition mt-2 sm:mt-0"
             >
               <span className="border-b-2 border-current pb-1 text-lg">Shop Now</span>

@@ -1,70 +1,55 @@
-import asyncHandler from "express-async-handler";
-import Order from "../models/Order.js";
-import Product from "../models/Product.js";
-// User import is not strictly needed if we trust req.user from middleware
+import asyncHandler from 'express-async-handler';
+import Order from '../models/Order.js';
+import Product from '../models/Product.js';
 
-// @desc    Create new order
-// @route   POST /api/orders
-// @access  Private
-const createOrder = asyncHandler(async (req, res) => {
-  // 1. Get data from Frontend Request Body
+
+// Create new order
+const addOrderItems = asyncHandler(async (req, res) => {
   const {
     orderItems,
     shippingAddress,
     paymentMethod,
     itemsPrice,
-    taxPrice,
     shippingPrice,
     totalPrice,
-  } = req.body;
+  } = req.body; // ✅ No taxPrice here
 
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
+    return;
   } else {
-    // 2. Create the Order Object
     const order = new Order({
       orderItems: orderItems.map((x) => ({
         ...x,
-        product: x._id || x.product, // Ensure ID is correct
-        _id: undefined, // Don't save the cart item ID, let Mongo generate a new one
+        product: x._id,
+        _id: undefined,
       })),
       user: req.user._id,
-      shippingAddress, // Uses the address sent from Frontend
+      shippingAddress,
       paymentMethod,
       itemsPrice,
-      taxPrice,
       shippingPrice,
-      totalPrice,
+      totalPrice, // ✅ No taxPrice here
     });
 
-    // 3. Save Order
     const createdOrder = await order.save();
-
-    // 4. (Optional) Reduce Stock Logic
-    // You can keep your stock reduction logic here if you want, 
-    // but make sure it loops through the 'orderItems' from the body, not user.cartItems.
-    for (const item of orderItems) {
-      const product = await Product.findById(item.product || item._id);
-      if (product) {
-        product.countInStock = product.countInStock - item.qty;
-        await product.save();
-      }
-    }
-
     res.status(201).json(createdOrder);
   }
 });
 
-// ... keep getMyOrders and others ...
-const getMyOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
-  res.json(orders);
-});
-
-// You also need this for the OrderScreen to work!
+// Get order by ID
 const getOrderById = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id).populate('user', 'name email');
+  if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    res.status(404);
+    throw new Error('Invalid Order ID');
+  }
+
+  const order = await Order.findById(req.params.id).populate(
+    'user',
+    'name email'
+  );
+
   if (order) {
     res.json(order);
   } else {
@@ -73,4 +58,57 @@ const getOrderById = asyncHandler(async (req, res) => {
   }
 });
 
-export { createOrder, getMyOrders, getOrderById };
+
+// Get logged in user orders
+const getMyOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id });
+  res.json(orders);
+});
+
+// Update order to paid
+const updateOrderToPaid = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.paymentResult = {
+      id: req.body.id || 'simulated',
+      status: 'completed',
+      email_address: req.body.email_address,
+    };
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// Update order to delivered
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (order) {
+    order.isDelivered = true;
+    order.deliveredAt = Date.now();
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+});
+
+// Get all orders
+const getOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({}).populate('user', 'id name');
+  res.json(orders);
+});
+
+export {
+  addOrderItems, 
+  getMyOrders,
+  getOrderById,
+  updateOrderToPaid,
+  updateOrderToDelivered,
+  getOrders, 
+};
