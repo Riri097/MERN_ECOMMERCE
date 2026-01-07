@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { FaMobileAlt, FaCamera, FaHeadphones, FaGamepad, FaTv } from 'react-icons/fa';
+import { FaLaptop } from 'react-icons/fa6';
 
 const categories = [
   { name: 'Phones', icon: <FaMobileAlt />, path: '/search/phone' },
   { name: 'Cameras', icon: <FaCamera />, path: '/search/camera' },
   { name: 'Headphones', icon: <FaHeadphones />, path: '/search/headphone' },
+  { name: 'Laptops', icon: <FaLaptop />, path: '/search/Laptop' },
   { name: 'Gaming', icon: <FaGamepad />, path: '/search/gaming' },
   { name: 'TV', icon: <FaTv />, path: '/search/tv' },
 ];
