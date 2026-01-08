@@ -2,7 +2,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
-import { clearCartItems } from '../slices/cartSlice';
+import { resetCart } from '../slices/cartSlice';
 import SearchBox from './SearchBox';
 import { FaShoppingCart, FaUser, FaBars, FaTimes, FaSun, FaMoon } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
@@ -34,7 +34,7 @@ const Header = () => {
     try {
       await logoutApiCall().unwrap();
       dispatch(logout());
-      dispatch(clearCartItems());
+      dispatch(resetCart()); 
       navigate('/login');
     } catch (err) {
       console.error(err);

@@ -21,7 +21,7 @@ const CartScreen = () => {
   };
 
   const checkoutHandler = () => {
-    navigate('/placeorder');
+    navigate('/login?redirect=/shipping');
   };
 
   return (
