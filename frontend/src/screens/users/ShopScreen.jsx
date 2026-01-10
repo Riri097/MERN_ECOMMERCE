@@ -1,110 +1,117 @@
-
-    import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGetProductsQuery, useGetCategoriesQuery } from '../../slices/productsApiSlice';
+import {
+  useGetProductsQuery,
+  useGetCategoriesQuery,
+} from '../../slices/productsApiSlice';
 import Product from '../../components/Product';
 import Paginate from '../../components/Paginate';
+import Loader from '../../components/Loader';
+import Message from '../../components/Message';
 
 const ShopScreen = () => {
   const { keyword } = useParams();
   const [pageNumber, setPageNumber] = useState(1);
-  const [category, setCategory] = useState('All'); // State for selected category
+  const [category, setCategory] = useState('All');
 
-  // Fetch Categories
   const { data: categories, isLoading: loadingCategories } = useGetCategoriesQuery();
-  
-  // Fetch Products (depends on page, keyword, and category)
-  const { data, isLoading, error } = useGetProductsQuery({ 
-    keyword, 
-    pageNumber, 
-    category: category !== 'All' ? category : '' 
+
+  const { data, isLoading, error } = useGetProductsQuery({
+    keyword,
+    pageNumber,
+    category: category !== 'All' ? category : '',
   });
 
-  // Reset page to 1 when category changes
   useEffect(() => {
     setPageNumber(1);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [category]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        
-        {/* --- LEFT SIDEBAR: FILTERS --- */}
-        <div className="w-full md:w-1/4">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white border-b pb-2 border-gray-200 dark:border-gray-700">
-              Categories
-            </h3>
-            
-            <ul className="space-y-2">
-              {/* 'All' Option */}
-              <li>
-                <button
-                  className={`w-full text-left px-2 py-1 rounded transition ${
-                    category === 'All' 
-                      ? 'bg-blue-600 text-white font-bold' 
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                  onClick={() => setCategory('All')}
-                >
-                  All Products
-                </button>
-              </li>
+    <div className="bg-gray-50/50 dark:bg-black min-h-screen">
+      <div className="pt-10 pb-6 text-center">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+          {keyword ? `Results for "${keyword}"` : 'Explore Our Collection'}
+        </h1>
+      </div>
 
-              {/* Dynamic Categories */}
-              {!loadingCategories && categories?.map((c) => (
-                <li key={c}>
-                  <button
-                    className={`w-full text-left px-2 py-1 rounded transition ${
-                      category === c 
-                        ? 'bg-blue-600 text-white font-bold' 
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                    onClick={() => setCategory(c)}
-                  >
-                    {c}
-                  </button>
-                </li>
-              ))}
-            </ul>
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800 backdrop-blur-md border-y border-gray-100 dark:border-gray-800 mb-8 py-3">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center flex-wrap gap-2 md:gap-3">
+            <button
+              onClick={() => setCategory('All')}
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 transform hover:-translate-y-0.5
+                ${category === 'All'
+                  ? 'bg-black text-white shadow-lg dark:bg-white dark:text-black'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-400 hover:text-black dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-500'
+                }`}
+            >
+              All Items
+            </button>
+
+            {!loadingCategories && categories?.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 transform hover:-translate-y-0.5 capitalize
+                  ${category === c
+                    ? 'bg-black text-white shadow-lg dark:bg-white dark:text-black'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-400 hover:text-black dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-500'
+                  }`}
+              >
+                {c}
+              </button>
+            ))}
           </div>
         </div>
-
-        {/* --- RIGHT SIDE: PRODUCTS GRID --- */}
-        <div className="w-full md:w-3/4">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-            {category === 'All' ? 'All Products' : `${category} Products`}
-          </h2>
-
-          {isLoading ? (
-            <h2>Loading...</h2>
-          ) : error ? (
-            <div className="text-red-500">{error?.data?.message || error.error}</div>
-          ) : (
-            <>
-              {data.products.length === 0 ? (
-                <div className="text-gray-500 dark:text-gray-400">No products found in this category.</div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {data.products.map((product) => (
-                    <Product key={product._id} product={product} />
-                  ))}
-                </div>
-              )}
-              
-              <div className="mt-8">
-                <Paginate 
-                  pages={data.pages} 
-                  page={data.page} 
-                  keyword={keyword ? keyword : ''}
-                  setPage={setPageNumber}
-                />
-              </div>
-            </>
-          )}
-        </div>
-
       </div>
-    </div> ); };
+
+      <div className="container mx-auto px-4 pb-12">
+        {isLoading ? (
+          <Loader />
+        ) : error ? (
+          <Message variant="danger">{error?.data?.message || error.error}</Message>
+        ) : (
+          <>
+            {!isLoading && (
+              <div className="mb-6 text-gray-500 dark:text-gray-400 text-sm font-medium">
+                Showing {data.products.length} result(s) for <span className="text-black dark:text-white font-bold">"{category}"</span>
+              </div>
+            )}
+
+            {data.products.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white">No products found</h3>
+                <p className="text-gray-500">Try selecting a different category or clear your search.</p>
+                <button 
+                  onClick={() => setCategory('All')} 
+                  className="mt-4 text-blue-600 font-bold hover:underline"
+                >
+                  View All Products
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                {data.products.map((product) => (
+                  <Product key={product._id} product={product} />
+                ))}
+              </div>
+            )}
+
+            <div className="mt-16 flex justify-center">
+              <Paginate
+                pages={data.pages}
+                page={data.page}
+                keyword={keyword ? keyword : ''}
+                setPage={setPageNumber}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default ShopScreen;

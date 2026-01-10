@@ -107,7 +107,12 @@ const UserListScreen = () => {
               </tbody>
             </table>
           </div>
-          <Paginate pages={data.pages} page={data.page} setPage={setPageNumber} />
+
+          <Paginate
+            pages={data.pages}
+            page={pageNumber}       
+            setPage={setPageNumber} 
+          />
         </>
       )}
     </div>

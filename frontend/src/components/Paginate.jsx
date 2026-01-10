@@ -1,24 +1,57 @@
-import React from 'react';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-const Paginate = ({ pages, page, setPage }) => {
+const Paginate = ({ pages, page, isAdmin = false, keyword = '', setPage }) => {
+  // If only 1 page, don't show pagination
+  if (pages <= 1) return null;
+
+  const handlePageChange = (newPage) => {
+    if (setPage) {
+      setPage(newPage);
+      // Scroll to top of product list nicely
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
-    pages > 1 && (
-      <div className="flex justify-center mt-8 space-x-2">
-        {[...Array(pages).keys()].map((x) => (
+    <div className="flex justify-center items-center gap-2 mt-12">
+      
+      {/* Previous Button */}
+      <button
+        onClick={() => handlePageChange(page - 1)}
+        disabled={page === 1}
+        className="flex items-center justify-center w-10 h-10 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-white dark:border-gray-600 dark:hover:bg-gray-700 dark:text-white disabled:dark:hover:bg-transparent transition-colors"
+      >
+        <FaChevronLeft size={12} />
+      </button>
+
+      {/* Number Boxes */}
+      {[...Array(pages).keys()].map((x) => {
+        const pageNum = x + 1;
+        return (
           <button
-            key={x + 1}
-            onClick={() => setPage(x + 1)}
-            className={`px-4 py-2 rounded border transition-colors duration-200 ${
-              x + 1 === page
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600'
+            key={pageNum}
+            onClick={() => handlePageChange(pageNum)}
+            className={`w-10 h-10 rounded text-sm font-bold border transition-colors ${
+              page === pageNum
+                ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700'
             }`}
           >
-            {x + 1}
+            {pageNum}
           </button>
-        ))}
-      </div>
-    )
+        );
+      })}
+
+      {/* Next Button */}
+      <button
+        onClick={() => handlePageChange(page + 1)}
+        disabled={page === pages}
+        className="flex items-center justify-center w-10 h-10 rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-white dark:border-gray-600 dark:hover:bg-gray-700 dark:text-white disabled:dark:hover:bg-transparent transition-colors"
+      >
+        <FaChevronRight size={12} />
+      </button>
+
+    </div>
   );
 };
 

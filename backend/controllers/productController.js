@@ -3,7 +3,7 @@ import Product from '../models/Product.js';
 
 //Fetch all products
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = process.env.PAGINATION_LIMIT || 8;
+  const pageSize = process.env.PAGINATION_LIMIT || 4;
   const page = Number(req.query.pageNumber) || 1;
 
 const keyword = req.query.keyword
@@ -18,6 +18,7 @@ const keyword = req.query.keyword
 
   const count = await Product.countDocuments({ ...keyword });
   const products = await Product.find({ ...keyword })
+  .sort({ createdAt: -1 })
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
@@ -37,9 +38,7 @@ const getProductById = asyncHandler(async (req, res) => {
   throw new Error('Product not found');
 });
 
-// @desc    Create a product
-// @route   POST /api/products
-// @access  Private/Admin
+// Create a product
 const createProduct = asyncHandler(async (req, res) => {
   const { name, price, description, image, brand, category, countInStock } = req.body;
   
@@ -65,10 +64,7 @@ const createProduct = asyncHandler(async (req, res) => {
   res.status(201).json(createdProduct);
 });
 
-// @desc    Update a product
-// @route   PUT /api/products/:id
-// @access  Private/Admin
-// --- THIS WAS MISSING ---
+// Update a product
 const updateProduct = asyncHandler(async (req, res) => {
   const { name, price, description, image, brand, category, countInStock } = req.body;
 
@@ -90,11 +86,8 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new Error('Product not found');
   }
 });
-// ------------------------
 
-// @desc    Delete a product
-// @route   DELETE /api/products/:id
-// @access  Private/Admin
+// Delete a product
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
@@ -107,9 +100,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Create new review
-// @route   POST /api/products/:id/reviews
-// @access  Private
+// Create new review
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
 
@@ -152,17 +143,13 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get top rated products
-// @route   GET /api/products/top
-// @access  Public
+// Get top rated products
 const getTopProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).sort({ rating: -1 }).limit(3);
+  const products = await Product.find({}).sort({ rating: -1 }).limit(8);
   res.json(products);
 });
 
-// @desc    Get all categories
-// @route   GET /api/products/categories
-// @access  Public
+// Get all categories
 const getCategories = asyncHandler(async (req, res) => {
   const categories = await Product.find().distinct('category');
   res.json(categories);

@@ -19,13 +19,10 @@ const ProductEditScreen = () => {
 
   const navigate = useNavigate();
 
-  // Fetch current product data
   const { data: product, isLoading, refetch, error } = useGetProductDetailsQuery(productId);
 
-  // Setup Update Mutation
   const [updateProduct, { isLoading: loadingUpdate }] = useUpdateProductMutation();
 
-  // Setup Upload Mutation
   const [uploadProductImage, { isLoading: loadingUpload }] = useUploadProductImageMutation();
 
   useEffect(() => {
@@ -52,9 +49,9 @@ const ProductEditScreen = () => {
         category,
         description,
         countInStock,
-      }).unwrap(); // unwrap allows us to catch errors
+      }).unwrap(); 
       alert('Product Updated');
-      refetch(); // Ensure we have fresh data
+      refetch(); 
       navigate('/admin/productlist');
     } catch (err) {
       alert(err?.data?.message || err.error);
@@ -67,7 +64,7 @@ const ProductEditScreen = () => {
     try {
       const res = await uploadProductImage(formData).unwrap();
       alert(res.message);
-      setImage(res.image); // Set the image URL returned from server
+      setImage(res.image); 
     } catch (err) {
       alert(err?.data?.message || err.error);
     }
@@ -91,7 +88,6 @@ const ProductEditScreen = () => {
       ) : (
         <form onSubmit={submitHandler} className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
           
-          {/* Name */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Name</label>
             <input
@@ -103,7 +99,6 @@ const ProductEditScreen = () => {
             />
           </div>
 
-          {/* Price */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Price</label>
             <input
@@ -115,10 +110,8 @@ const ProductEditScreen = () => {
             />
           </div>
 
-          {/* Image Upload */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Image</label>
-
             {image && (
               <div className="mb-4">
                 <img 
@@ -142,7 +135,6 @@ const ProductEditScreen = () => {
             />
           </div>
 
-          {/* Brand */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Brand</label>
             <input
@@ -154,7 +146,6 @@ const ProductEditScreen = () => {
             />
           </div>
 
-          {/* Count In Stock */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Count In Stock</label>
             <input
@@ -166,7 +157,6 @@ const ProductEditScreen = () => {
             />
           </div>
 
-          {/* Category */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Category</label>
             <input
@@ -178,7 +168,6 @@ const ProductEditScreen = () => {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Description</label>
             <textarea

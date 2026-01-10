@@ -58,7 +58,6 @@ const ProductCreateScreen = () => {
 
       <form onSubmit={submitHandler} className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
         
-        {/* Name */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Name</label>
           <input
@@ -70,7 +69,6 @@ const ProductCreateScreen = () => {
           />
         </div>
 
-        {/* Price */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Price</label>
           <input
@@ -82,7 +80,6 @@ const ProductCreateScreen = () => {
           />
         </div>
 
-        {/* Image Upload */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Image</label>
           {image && (
@@ -104,7 +101,6 @@ const ProductCreateScreen = () => {
           />
         </div>
 
-        {/* Brand */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Brand</label>
           <input
@@ -116,7 +112,6 @@ const ProductCreateScreen = () => {
           />
         </div>
 
-        {/* Count In Stock */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Count In Stock</label>
           <input
@@ -128,7 +123,6 @@ const ProductCreateScreen = () => {
           />
         </div>
 
-        {/* Category */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Category</label>
           <input
@@ -140,7 +134,6 @@ const ProductCreateScreen = () => {
           />
         </div>
 
-        {/* Description */}
         <div>
           <label className="block text-gray-700 dark:text-gray-300 mb-2">Description</label>
           <textarea

@@ -18,7 +18,7 @@ const PlaceOrderScreen = () => {
   };
 
   const itemsPrice = addDecimals(cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0));
-  const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 10); // Free shipping over $100
+  const shippingPrice = addDecimals(itemsPrice > 100 ? 0 : 10); 
   const taxPrice = addDecimals(Number((0.15 * itemsPrice).toFixed(2)));
   const totalPrice = (Number(itemsPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2);
 
@@ -31,14 +31,14 @@ const PlaceOrderScreen = () => {
   }, [cart.paymentMethod, cart.shippingAddress, navigate]);
 
   const placeOrderHandler = async () => {
-    // --- FAKE PAYMENT CONFIRMATION ---
+    
     const confirmed = window.confirm(`Confirm payment of $${totalPrice}?`);
     
     if (confirmed) {
       try {
         const res = await createOrder({
           orderItems: cart.cartItems,
-          shippingAddress: cart.shippingAddress, // Sending simple string
+          shippingAddress: cart.shippingAddress, 
           paymentMethod: cart.paymentMethod,
           itemsPrice: itemsPrice,
           shippingPrice: shippingPrice,
@@ -60,20 +60,16 @@ const PlaceOrderScreen = () => {
       <CheckoutSteps step1 step2 step3 step4 />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left Side: Details */}
         <div className="md:col-span-2 space-y-6">
-          
-          {/* Shipping Info */}
+        
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Shipping</h2>
             <p className="text-gray-600 dark:text-gray-300">
               <strong>Address: </strong>
-              {/* Displaying the simple string address */}
               {cart.shippingAddress}
             </p>
           </div>
 
-          {/* Payment Method */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Payment Method</h2>
             <p className="text-gray-600 dark:text-gray-300">
@@ -82,7 +78,6 @@ const PlaceOrderScreen = () => {
             </p>
           </div>
 
-          {/* Order Items */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Order Items</h2>
             {cart.cartItems.length === 0 ? (
@@ -107,7 +102,6 @@ const PlaceOrderScreen = () => {
           </div>
         </div>
 
-        {/* Right Side: Summary */}
         <div className="md:col-span-1">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow sticky top-24">
             <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Order Summary</h2>

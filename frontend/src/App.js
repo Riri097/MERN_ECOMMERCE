@@ -1,6 +1,6 @@
 import { useEffect } from 'react'; 
 import { useSelector } from 'react-redux'; 
-import { Outlet, useLocation } from 'react-router-dom'; // Added useLocation
+import { Outlet, useLocation } from 'react-router-dom'; 
 import Header from './components/Header';
 import Footer from './components/Footer';
 import AdminSidebar from './components/AdminSidebar';
@@ -13,7 +13,7 @@ const App = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const [updateProfile] = useProfileMutation();
   
-  const location = useLocation(); // Get current URL path
+  const location = useLocation(); 
 
   // FIX 1: Check for 'isAdmin' boolean (standard MERN), not 'role' string
   // FIX 2: Only use Admin Layout if user is Admin AND on an /admin route
@@ -34,7 +34,7 @@ const App = () => {
           }));
 
           await updateProfile({
-            _id: userInfo._id, // Ensure ID is sent
+            _id: userInfo._id, 
             name: userInfo.name,
             email: userInfo.email,
             cartItems: formattedCartItems, 
@@ -78,7 +78,7 @@ const App = () => {
         <Outlet />
       </main>
       <Footer />
-        <ToastContainer />
+  <ToastContainer position="bottom-right" /> 
 </div>
 );
 };

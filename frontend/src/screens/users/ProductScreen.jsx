@@ -51,10 +51,7 @@ const ProductScreen = () => {
         <div className="text-red-500 text-center">{error?.data?.message || error.error}</div>
       ) : (
         <>
-          {/* --- PRODUCT TOP SECTION --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
-            
-            {/* 1. Simple Image (No Box) */}
             <div>
               <img
                 src={product.image}
@@ -63,24 +60,19 @@ const ProductScreen = () => {
               />
             </div>
 
-            {/* 2. Product Info */}
             <div className="flex flex-col">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{product.name}</h1>
-              
               <div className="flex items-center gap-4 mb-4">
                 <Rating value={product.rating} />
                 <span className="text-gray-500 text-sm">({product.numReviews} reviews)</span>
               </div>
-
               <div className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 ${product.price}
               </div>
-
               <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                 {product.description}
               </p>
 
-              {/* Simple Add to Cart Area */}
               <div className="border-t border-b border-gray-200 dark:border-gray-700 py-6">
                 <div className="flex items-center gap-4 mb-4">
                   <span className={`font-medium ${product.countInStock > 0 ? 'text-green-600' : 'text-red-600'}`}>
@@ -114,13 +106,11 @@ const ProductScreen = () => {
             </div>
           </div>
 
-          {/* --- REVIEWS SECTION (Comment Style) --- */}
           <div className="max-w-3xl">
             <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
               Reviews ({product.reviews.length})
             </h2>
 
-            {/* Write Review Form */}
             {userInfo ? (
               <form onSubmit={submitHandler} className="mb-10 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                 <h3 className="font-bold mb-3 dark:text-white">Write a review</h3>
@@ -161,7 +151,6 @@ const ProductScreen = () => {
               </div>
             )}
 
-            {/* Reviews List */}
             <div className="space-y-6">
               {(product.reviews || []).length === 0 && (
                 <p className="text-gray-500">No reviews yet.</p>
@@ -179,16 +168,15 @@ const ProductScreen = () => {
                     </div>
                     <Rating value={review.rating} />
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm pl-10">                {review.comment}
-              </p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm pl-10">{review.comment}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-    </>
-  )}
-</div>
-);
+          </div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default ProductScreen;

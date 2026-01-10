@@ -3,8 +3,14 @@ import { useGetMyOrdersQuery } from '../../slices/ordersApiSlice';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
 
+const formatDate = (date) => {
+  if (!date) return '—';
+  const d = new Date(date);
+  return isNaN(d) ? '—' : d.toISOString().split('T')[0];
+};
+
 const MyOrdersScreen = () => {
-  const { data: orders, isLoading, error } = useGetMyOrdersQuery();
+  const { data: orders = [], isLoading, error } = useGetMyOrdersQuery();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -32,10 +38,10 @@ const MyOrdersScreen = () => {
               {orders.map((order) => (
                 <tr
                   key={order._id}
-                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <td className="p-3">
-                    {order.createdAt.substring(0, 10)}
+                    {formatDate(order.createdAt)}
                   </td>
                   <td className="p-3">
                     ${order.totalPrice}

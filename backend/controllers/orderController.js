@@ -2,7 +2,6 @@ import asyncHandler from 'express-async-handler';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 
-
 // Create new order
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
@@ -100,9 +99,23 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 
 // Get all orders
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name');
-  res.json(orders);
+  const pageSize = Number(req.query.pageSize) || 7; 
+  const page = Number(req.query.pageNumber) || 1;
+
+  const count = await Order.countDocuments({});
+  const orders = await Order.find({})
+    .populate('user', 'id name')
+    .sort({ createdAt: -1 })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({
+    orders,
+    page,
+    pages: Math.ceil(count / pageSize),
+  });
 });
+
 
 export {
   addOrderItems, 

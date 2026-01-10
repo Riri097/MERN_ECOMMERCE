@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaTrash, FaArrowLeft } from 'react-icons/fa';
-import { addToCart, removeFromCart, clearCartItems } from '../../slices/cartSlice';
+import { addToCart, removeFromCart } from '../../slices/cartSlice';
 import { useCreateOrderMutation } from '../../slices/ordersApiSlice';
 
 const CartScreen = () => {

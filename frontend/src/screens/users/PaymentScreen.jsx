@@ -13,8 +13,7 @@ const PaymentScreen = () => {
   const { shippingAddress } = cart;
 
   useEffect(() => {
-    // Check if shipping address exists (it's just a string now)
-    if (!shippingAddress) {
+      if (!shippingAddress) {
       navigate('/shipping');
     }
   }, [shippingAddress, navigate]);

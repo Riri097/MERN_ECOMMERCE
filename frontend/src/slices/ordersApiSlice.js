@@ -9,41 +9,36 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body: order,
       }),
-      invalidatesTags: ['Order'],
+      invalidatesTags: ['Order'], // <- invalidate Order tag
     }),
     getMyOrders: builder.query({
-      query: () => ({
-        url: `${ORDERS_URL}/myorders`,
-      }),
-      providesTags: ['Order'],
+      query: () => `${ORDERS_URL}/myorders`,
+      providesTags: ['Order'], // <- provides Order tag
     }),
     getOrderDetails: builder.query({
-      query: (id) => ({
-        url: `${ORDERS_URL}/${id}`,
-      }),
+      query: (id) => `${ORDERS_URL}/${id}`,
       keepUnusedDataFor: 5,
+      providesTags: (result, error, id) => [{ type: 'Order', id }], // optional per-order tagging
     }),
-    // --- 1. Pay Order (Needed for "Mark as Paid" button) ---
     payOrder: builder.mutation({
       query: ({ orderId, details }) => ({
         url: `${ORDERS_URL}/${orderId}/pay`,
         method: 'PUT',
         body: details,
       }),
+      invalidatesTags: ['Order'], // <- invalidates orders
     }),
-    // --- 2. Get All Orders (Needed for Admin Order List) ---
     getOrders: builder.query({
-      query: () => ({
-        url: ORDERS_URL,
-      }),
-      keepUnusedDataFor: 5,
+      query: ({ pageNumber = 1, pageSize = 5 } = {}) => 
+    `${ORDERS_URL}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+      providesTags: ['Order'], // <- provides Order tag
     }),
-    // --- 3. Deliver Order (Needed for Admin "Mark as Delivered") ---
     deliverOrder: builder.mutation({
       query: (orderId) => ({
         url: `${ORDERS_URL}/${orderId}/deliver`,
         method: 'PUT',
       }),
+      invalidatesTags: ['Order'], // <- invalidates orders
     }),
   }),
 });
@@ -54,5 +49,5 @@ export const {
   useGetOrderDetailsQuery,
   usePayOrderMutation,
   useGetOrdersQuery, 
-useDeliverOrderMutation,
+  useDeliverOrderMutation,
 } = ordersApiSlice;
