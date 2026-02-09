@@ -31,14 +31,11 @@ app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.resolve();
+  // Serve frontend build folder correctly
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
 
-  // Serve static files
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-
-  // Correct wildcard for Express v5
-  app.get(/^\/.*$/, (req, res) =>
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'))
+  app.get('*', (req, res) =>
+    res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'))
   );
 }
  else {
