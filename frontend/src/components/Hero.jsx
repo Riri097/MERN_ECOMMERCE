@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
-import heroBgDark from '../assets/hero-bg.png';
-import heroBgLight from '../assets/hero-bg-light.png';
+import heroBg from '../assets/hero-bg.png';
 
 const Hero = () => {
   return (
@@ -10,14 +9,14 @@ const Hero = () => {
       <div className="absolute inset-0">
         {/* Light Mode Image */}
         <img 
-          src={heroBgLight} 
+          src={heroBg} 
           alt="Background" 
           className="w-full h-full object-cover object-center block dark:hidden"
         />
         
         {/* Dark Mode Image */}
         <img 
-          src={heroBgDark} 
+          src={heroBg} 
           alt="Background" 
           className="w-full h-full object-cover object-center hidden dark:block"
         />
