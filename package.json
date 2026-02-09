@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-  "start": "npm run build && node backend/server.js",
-  "build": "npm install --prefix frontend && npm run build --prefix frontend",
+"scripts": {
+  "start": "node backend/server.js",
   "dev": "concurrently \"npm run server\" \"npm run client\"",
   "server": "nodemon backend/server.js",
-  "client": "npm start --prefix frontend"
+  "client": "npm start --prefix frontend",
+  "build": "npm install --prefix frontend && npm run build --prefix frontend"
 }
 ,
   "keywords": [],
