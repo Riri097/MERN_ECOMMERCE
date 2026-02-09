@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
 "scripts": {
+  "preinstall": "npm install",
   "start": "node backend/server.js",
   "build": "npm install --prefix frontend && npm run build --prefix frontend",
   "dev": "concurrently \"npm run server\" \"npm run client\"",
