@@ -8,6 +8,7 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 connectDB();
@@ -25,17 +26,18 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Serve uploads folder
-const __dirname = path.resolve();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'frontend/build')));
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
 
   // Catch-all route for React
-  app.get('/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
   });
 } else {
   app.get('/', (req, res) => {
