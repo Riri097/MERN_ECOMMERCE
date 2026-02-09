@@ -1,4 +1,7 @@
+// server.js
+
 import path from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
@@ -8,7 +11,6 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
-import { fileURLToPath } from 'url';
 
 dotenv.config();
 connectDB();
@@ -20,24 +22,25 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// API Routes
+// API routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/upload', uploadRoutes);
 
-
+// Serve uploads folder
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  const frontendBuildPath = path.join(__dirname, '../frontend/build');
+  app.use(express.static(frontendBuildPath));
 
   // Catch-all route for React
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, 'index.html'));
   });
 } else {
   app.get('/', (req, res) => {
@@ -45,8 +48,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-
-// Error Handling Middleware
+// Error middleware
 app.use(notFound);
 app.use(errorHandler);
 
